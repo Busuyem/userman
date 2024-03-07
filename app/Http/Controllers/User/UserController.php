@@ -4,6 +4,10 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\User;
+use App\Http\Resources\UserResource;
+use Illuminate\Http\JsonResponse;
+
 
 class UserController extends Controller
 {
@@ -12,9 +16,21 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function allUsers():JsonResponse
     {
-        //
+        try{
+            
+            $users = User::all();
+            return response()->json([
+                'status_code' => 200,
+                'status' => 'Success!',
+                'users' => UserResource::collection($users)
+            ]);
+        }catch(Throwable $e){
+            return response()->json([
+                'message' => 'failed!'
+            ]);
+        }
     }
 
     /**
