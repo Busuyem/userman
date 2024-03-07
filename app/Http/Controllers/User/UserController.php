@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\JsonResponse;
+use App\Http\Requests\UpdateUserRequest;
 
 
 class UserController extends Controller
@@ -72,9 +73,21 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function updateUserById(UpdateUserRequest $request, $id)
     {
-        //
+        //dd($request->all());
+        try{
+            $validatedData = $request->validated();
+            $user = User::find($id);
+            $user->update($validatedData);
+            return response()->json([
+                'status_code' => 201,
+                'message' => 'Success!',
+                'user' => $user
+            ]);
+        }catch(Throwable $e){
+
+        }
     }
 
     /**
