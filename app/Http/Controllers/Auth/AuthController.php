@@ -5,22 +5,35 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Throwable;
+use App\Http\Requests\RegisterUserRequest;
+use App\Http\Resources\UserResource;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
+    public function register(RegisterUserRequest $request)
     {
-        // Validation code for registration
+        try{
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-        ]);
+            $validatedData = $request->validated();
 
-        $token = $user->createToken('userman')->accessToken;
+            $user = User::create($validatedData);
 
-        return response()->json(['token' => $token], 201);
+            $token = $user->createToken('userman')->accessToken;
+
+            return response()->json([
+                'status_code' => 201,
+                'status' => 'Success!',
+                'token' => $token
+            ]);
+
+        }catch(Throwable $e){
+            return response()->json([
+                'status' => 'failed!',
+                'message' => $e->getMessage()
+            ]);
+        }
+    
     }
 
     public function login(Request $request)
