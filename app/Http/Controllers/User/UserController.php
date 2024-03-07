@@ -73,20 +73,28 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function updateUserById(UpdateUserRequest $request, $id)
+    public function updateUser(UpdateUserRequest $request, $id)
     {
-        //dd($request->all());
         try{
             $validatedData = $request->validated();
-            $user = User::find($id);
-            $user->update($validatedData);
-            return response()->json([
-                'status_code' => 201,
-                'message' => 'Success!',
-                'user' => $user
-            ]);
+            $user = User::where('id',$id)->first();
+            if(!$user){
+                return response()->json([
+                    'message' => 'user not found'
+                ]);
+            }else{
+                $user->update($validatedData);
+                return response()->json([
+                    'status_code' => 201,
+                    'message' => 'Success!',
+                    'user' => $user
+                ]);
+            }
         }catch(Throwable $e){
-
+            return response()->json([
+                'status' => 'failed!',
+                'message' => $e->getMessage()
+            ]);
         }
     }
 
@@ -96,8 +104,26 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function deleteUser($id)
     {
-        //
+        try{
+            $user = User::where('id', $id)->first();
+            if(!$user){
+                return response()->json([
+                    'message' => 'user not found!'
+                ]);
+            }else{
+                $user->delete();
+                return response()->json([
+                    'message' => 'User removed successfully'
+                ]);
+            }
+        }catch(Throwable $e){
+            return response()->json([
+                'status' => 'failed',
+                'message' => $e->getMessage()
+            ]);
+        }
+        
     }
 }

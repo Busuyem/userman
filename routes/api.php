@@ -24,6 +24,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/users', [UserController::class, 'allUsers']);
     Route::get('/users/{id}', [UserController::class, 'findUserById']);
-    Route::put('/users/{id}', [UserController::class, 'updateUserById']);
+    Route::put('/users/{id}', [UserController::class, 'updateUser']);
+    Route::delete('/users/{id}', [UserController::class, 'deleteUser']);
 });
+
 
