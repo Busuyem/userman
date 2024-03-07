@@ -23,5 +23,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/users', [UserController::class, 'allUsers']);
+    Route::get('/users/{id}', [UserController::class, 'findUserById']);
+    Route::patch('/users/{id}', [UserController::class, 'updateUserById']);
 });
 

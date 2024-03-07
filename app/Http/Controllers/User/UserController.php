@@ -34,25 +34,35 @@ class UserController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function findUserById($id)
     {
-        //
+        try{
+
+            $user = User::where('id',$id)->first();
+
+            if(empty($user)){
+                return response()->json([
+                    'message' => 'Not found!'
+                ]);
+            }else{
+                return response()->json([
+                    'status_code' => 200,
+                    'status' => 'Success',
+                    'user' => new UserResource($user)
+                ]);
+            }
+        }catch(Throwable $e){
+            return response()->json([
+                'status' => 'failed',
+                'message' => $e->getMessage()
+            ]);
+        }
+        
     }
 
     /**
