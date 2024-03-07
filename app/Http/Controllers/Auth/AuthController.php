@@ -50,7 +50,7 @@ class AuthController extends Controller
             if (!$user && !Hash::check($request->password, $user->password)) {
                 return response()->json([
                     'status_code' => 401,
-                    'message' => 'Unathorized!'
+                    'message' => 'The provided credentials do not match.'
                 ]);
             } else {
                 $token = $user->createToken('userToken')->accessToken;
@@ -73,7 +73,14 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->token()->revoke();
-        return response()->json(['message' => 'Successfully logged out']);
+        try{
+
+            $request->user()->token()->revoke();
+            return response()->json(['message' => 'Log out successful!']);
+        }catch(Throwable $e){
+            return response()->json([
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 }
