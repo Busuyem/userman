@@ -8,6 +8,9 @@ use App\Models\User;
 use Throwable;
 use App\Http\Requests\RegisterUserRequest;
 use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\LoginUserRequest;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -17,9 +20,9 @@ class AuthController extends Controller
 
             $validatedData = $request->validated();
 
+            $validatedData['password'] = Hash::make($request->password);
             $user = User::create($validatedData);
-
-            $token = $user->createToken('userman')->accessToken;
+            $token = $user->createToken('userToken')->accessToken;
 
             return response()->json([
                 'status_code' => 201,
@@ -36,16 +39,36 @@ class AuthController extends Controller
     
     }
 
-    public function login(Request $request)
+    public function login(LoginUserRequest $request)
     {
-        // Validation code for login
+        try{
 
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            $token = Auth::user()->createToken('userman')->accessToken;
-            return response()->json(['token' => $token], 200);
-        } else {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            $validatedData = $request->validated();
+
+            $user = User::where('email', $request->email)->first();
+
+            if (!$user && !Hash::check($request->password, $user->password)) {
+                return response()->json([
+                    'status_code' => 401,
+                    'message' => 'Unathorized!'
+                ]);
+            } else {
+                $token = $user->createToken('userToken')->accessToken;
+                return response()->json([
+                    'status_code' => 200,
+                    'message' => 'Login successful!',
+                    'token' => $token
+                ]);
+            }
+
+        }catch(Throwable $e){
+            return response()->json([
+                'status' => 'Failed',
+                'message' -> $e->getMessage()
+            ]);
         }
+
+        
     }
 
     public function logout(Request $request)
